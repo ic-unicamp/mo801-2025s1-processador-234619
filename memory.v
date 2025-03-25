@@ -3,6 +3,7 @@ module memory(
   input [31:0] data_in,
   output reg [31:0] data_out,
   input we
+  input clock
 );
 
 reg [31:0] mem[0:1024]; // 16KB de memória
