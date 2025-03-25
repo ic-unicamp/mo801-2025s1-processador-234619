@@ -34,7 +34,7 @@ control_unit control0 (clk, zero_signal, funct7, funct3, opcode,
 //PC REGISTER CONTROL
 wire [31:0] result;
 wire [31:0] program_count;
-clocked_register pc_register (clk, cu_PC_write, .inputA(result), .outputA(program_count));
+clocked_register program_counter (.clock(clk), cu_PC_write, .inputA(result), .outputA(program_count));
 
 //Instruction/data memory-related connections
 wire [31:0] idm_address <= cu_address_source ? result : program_count;
