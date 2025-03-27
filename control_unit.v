@@ -1,15 +1,20 @@
 module control_unit(
-    input clock, zero,
+    input clock, 
+    input zero,
     input [6:0] funct7, 
     input [2:0] funct3, 
     input [6:0] opcode,
     
-    output pc_write, address_source, memory_write, ir_write, register_write,
-    output result_source[1:0],
-    output ALU_control[2:0], 
-    output ALU_source_A[1:0],
-    output ALU_source_B[1:0], 
-    output immediate_source[1:0]
+    output reg pc_write, 
+    output reg address_source, 
+    output reg memory_write, 
+    output reg ir_write, 
+    output reg register_write,
+    output reg [1:0] result_source,
+    output reg [2:0] ALU_control, 
+    output reg [1:0] ALU_source_A,
+    output reg [1:0] ALU_source_B, 
+    output reg [1:0] immediate_source
 );
 
 reg state = 4'b0000;
@@ -22,8 +27,8 @@ always @ (posedge clock) begin
 
     //ALU Decoder
     case(ALU_operation)
-        2'b00: ALU_control = 2'b000;
-        2'b01: ALU_control = 2'b001;
+        2'b00: ALU_control = 3'b000;
+        2'b01: ALU_control = 3'b001;
         2'b10: begin
             case(funct3)
                 3'b010: ALU_control = 3'b101;
@@ -121,7 +126,7 @@ always @ (posedge clock) begin
 
     4'd7: begin //S7: ALU WriteBack
         result_source = 2'b00;
-        register_write = 1'b1
+        register_write = 1'b1;
 
         state = 4'd0;
     end
