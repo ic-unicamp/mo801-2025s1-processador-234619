@@ -1,8 +1,12 @@
 module immediate_extend(
     input [31:0] full_instruction,
     input [1:0] immediate_source,
-    output reg [31:0] immediate_extended = 32'd0
+    output reg [31:0] immediate_extended
 );
+
+initial begin
+    immediate_extended = 32'd0;
+end
 
 always @ (immediate_source)
 begin
