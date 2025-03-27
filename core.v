@@ -8,7 +8,6 @@ module core( // modulo de um core
 );
 
 always @(posedge clk) begin
-
 end
 
 //CONTROL UNIT WIRES
@@ -46,7 +45,7 @@ control_unit control0 (.clock(clk),
                        .immediate_source(cu_immediate_src));
 
 //PC REGISTER CONTROL
-wire [31:0] result;
+reg [31:0] result;
 wire [31:0] program_count;
 clocked_register program_counter (.clock(clk), 
                                   .enable(cu_PC_write), 
@@ -125,9 +124,10 @@ clocked_register register_file_register (.clock(clk), .enable(1'b1),
                                          .outputB(idm_data_out)); //verificar
 
 // mux before ALU logic
-wire reg [31:0] alu_mux_A;
-wire reg [31:0] alu_mux_B;
+reg [31:0] alu_mux_A;
+reg [31:0] alu_mux_B;
 
+always @ (cu_alusrc_A, cu_alusrc_B) begin
 case (cu_alusrc_A)
     2'b00: alu_mux_A = program_count;
     2'b01: alu_mux_A = old_program_count;
@@ -143,12 +143,12 @@ case (cu_alusrc_B)
     //CHECK THIS CASE
     2'b11: alu_mux_B = program_count;
 endcase
-
+end
 //The ALU itself
 wire [31:0] alu_result;
 alu alu0 (.operation_control(cu_alu_control), 
-          .sourceA(alu_mux_A), 
-          .sourceB(alu_mux_B),
+          .source_A(alu_mux_A), 
+          .source_B(alu_mux_B),
           .operation_output(alu_result), 
           .zero(zero_signal));
 
@@ -159,7 +159,7 @@ clocked_register alu_register(.clock(clk),
                               .enable(1'b1),
                               .inputA(alu_result), 
                               .outputA(alu_register_output));
-
+always @(cu_result_source) begin
 case (cu_result_source)
     2'b00: result = alu_result;
     2'b01: result = idm_to_result;
@@ -167,5 +167,7 @@ case (cu_result_source)
     //CHECK THIS CASE
     2'b11: alu_mux_B = 0;
 endcase
+end
+
 
 endmodule
