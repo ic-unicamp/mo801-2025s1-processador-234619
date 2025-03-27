@@ -2,7 +2,7 @@ module memory(
   input [31:0] address,
   input [31:0] data_in,
   output reg [31:0] data_out,
-  input we
+  input we,
   input clock
 );
 
