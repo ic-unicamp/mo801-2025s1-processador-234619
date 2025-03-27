@@ -2,8 +2,8 @@ module alu(
     input [2:0] operation_control,
     input [31:0] source_A,
     input [31:0] source_B,
-    output [31:0] operation_output,
-    output zero
+    output reg [31:0] operation_output,
+    output reg zero
 );
 
 always @ (*) begin
