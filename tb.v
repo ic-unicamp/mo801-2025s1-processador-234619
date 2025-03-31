@@ -7,17 +7,17 @@ wire [31:0] address, data_out, data_in;
 core dut(
   .clk(clk),
   .resetn(resetn),
-  .address(address),
-  .data_out(data_out),
-  .data_in(data_in),
-  .we(we)
+  .memory_address(address),
+  .memory_data_out(data_out),
+  .memory_data_in(data_in),
+  .memory_write_enable(we)
 );
 
 memory m(
   .address(address),
   .data_in(data_out),
   .data_out(data_in),
-  .we(we) 
+  .we(we)
 );
 
 // Clock generator
