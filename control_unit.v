@@ -22,9 +22,7 @@ reg pc_update = 1'b0;
 reg branch = 1'b0;
 reg ALU_operation = 2'b00;
 
-
-always @ (posedge clock) begin
-
+always @ (opcode or funct3 or funct7) begin
     //ALU Decoder
     case(ALU_operation)
         2'b00: ALU_control = 3'b000;
@@ -43,7 +41,9 @@ always @ (posedge clock) begin
             endcase
         end
     endcase
+end
 
+always @ (posedge clock) begin
     //pc write control signal
     pc_write = (zero && branch) || pc_update;
 
@@ -53,36 +53,44 @@ always @ (posedge clock) begin
         7'd35: immediate_source = 2'b01;
         7'd51: immediate_source = 2'bXX;
         7'd99: immediate_source = 2'b10;
+        7'd19: immediate_source = 2'b00;
     endcase
 
     //State machine
     case (state)
     4'd0: begin // S0: Fetch
+    $display("S0: Fetch");
         address_source = 1'b0;
         ir_write = 1'b1;
         ALU_source_A = 2'b00;
         ALU_source_B = 2'b10;
         ALU_operation = 2'b00;
         result_source = 2'b10;
+        pc_update = 1'b1;
         
         state = 4'd1;
     end
 
     4'd1: begin // S1: Decode
+    $display("S1: Decode");
         ALU_source_A = 2'b01;
         ALU_source_B = 2'b01;
         ALU_operation = 2'b00;
-
+    $display("%d, expected %d", opcode, 7'b0010011);
         case (opcode)
             7'b0000011, 7'b0100011: state = 4'd2; // lw or sw 
             7'b0110011: state = 4'd6; // R-type
             7'b0010011: state = 4'd8; // I-type ALU
             7'b1101011: state = 4'd9; // JAL
             7'b1100011: state = 4'd10; // BEQ
+            default: state = 4'd0; //Back to fetch in case of a strange opcode
         endcase
+        $display("%b, %b", state, opcode);
+
     end
 
     4'd2: begin // S2: MemAdr
+    $display("S2: Memory Address");
         ALU_source_A = 2'b00;
         ALU_source_B = 2'b10;
         ALU_operation = 2'b00;
@@ -94,6 +102,7 @@ always @ (posedge clock) begin
     end
 
     4'd3: begin //S3: MemRead
+        $display("S3: MemRead");
         result_source = 2'b00;
         address_source = 1'b1;
 
@@ -101,6 +110,7 @@ always @ (posedge clock) begin
     end
 
     4'd4: begin //S4: MemWriteBack
+        $display("S4: mem writeback");
         result_source = 2'b01;
         register_write = 1'b1;
 
@@ -108,6 +118,7 @@ always @ (posedge clock) begin
     end
 
     4'd5: begin //S5: MemWrite
+        $display("S5: Mem Write");
         result_source = 2'b00;
         address_source = 1'b1;
         memory_write = 1'b1;
@@ -117,6 +128,7 @@ always @ (posedge clock) begin
     end
 
     4'd6: begin //S6: ExecuteR
+        $display("S6: Execute R");
         ALU_source_A = 2'b10;
         ALU_source_B = 2'b00;
         ALU_operation = 2'b10;
@@ -125,6 +137,7 @@ always @ (posedge clock) begin
     end
 
     4'd7: begin //S7: ALU WriteBack
+        $display("S7: ALU Writeback");
         result_source = 2'b00;
         register_write = 1'b1;
 
@@ -132,6 +145,7 @@ always @ (posedge clock) begin
     end
 
     4'd8: begin //S8: ExecuteI
+        $display("S8: ExecuteI");
         ALU_source_A = 2'b10;
         ALU_source_B = 2'b01;
         ALU_operation = 2'b10;
@@ -140,6 +154,7 @@ always @ (posedge clock) begin
     end
 
     4'd9: begin //S9: JAL
+        $display("S9: JAL");
         ALU_source_A = 2'b01;
         ALU_source_B = 2'b10;
         ALU_operation = 2'b00;
