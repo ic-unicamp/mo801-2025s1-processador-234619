@@ -13,6 +13,13 @@ module register_file(
 );
 
 reg [4:0] registers [31:0];
+integer i;
+
+initial begin
+  for (i = 0; i < 32; i = i + 1) begin
+    registers[i] = 32'h00000000;
+  end
+end
 
 always @ (posedge clock) begin
 
