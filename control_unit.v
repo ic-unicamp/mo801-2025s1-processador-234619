@@ -17,10 +17,17 @@ module control_unit(
     output reg [1:0] immediate_source
 );
 
-reg state = 4'd0;
-reg pc_update = 1'b0;
-reg branch = 1'b0;
-reg ALU_operation = 2'b00;
+reg state;
+reg pc_update;
+reg branch;
+reg ALU_operation;
+
+initial begin
+    state = 4'd0;
+    pc_update = 1'b0;
+    branch = 1'b0;
+    ALU_operation = 2'b00;
+end
 
 always @ (opcode or funct3 or funct7) begin
     //ALU Decoder
