@@ -17,7 +17,7 @@ module control_unit(
     output reg [1:0] immediate_source
 );
 
-reg state = 4'b0000;
+reg state = 4'd0;
 reg pc_update = 1'b0;
 reg branch = 1'b0;
 reg ALU_operation = 2'b00;
@@ -44,7 +44,7 @@ always @ (opcode or funct3 or funct7) begin
 end
 
 always @ (posedge clock) begin
-    //pc write control signal
+    //pc write control signal 
     pc_write = (zero && branch) || pc_update;
 
     //Immediate control:
@@ -67,7 +67,6 @@ always @ (posedge clock) begin
         ALU_operation = 2'b00;
         result_source = 2'b10;
         pc_update = 1'b1;
-        
         state = 4'd1;
     end
 
@@ -76,16 +75,17 @@ always @ (posedge clock) begin
         ALU_source_A = 2'b01;
         ALU_source_B = 2'b01;
         ALU_operation = 2'b00;
-    $display("%d, expected %d", opcode, 7'b0010011);
+
+    $display("opcode %d, expected %d, state %d ", opcode, 7'b0010011, state);
         case (opcode)
             7'b0000011, 7'b0100011: state = 4'd2; // lw or sw 
             7'b0110011: state = 4'd6; // R-type
             7'b0010011: state = 4'd8; // I-type ALU
             7'b1101011: state = 4'd9; // JAL
             7'b1100011: state = 4'd10; // BEQ
-            default: state = 4'd0; //Back to fetch in case of a strange opcode
+            default: state = 4'd9; //Back to fetch in case of a strange opcode
         endcase
-        $display("%b, %b", state, opcode);
+        $display("opcode %d, state %d", opcode, state);
 
     end
 
