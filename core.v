@@ -1,9 +1,10 @@
 module core( // modulo de um core
   input clk, // clock
   input resetn, // reset que ativa em zero
-  output wire [31:0] memory_address, // endereço de saída
-  output wire [31:0] memory_data_out, // dado de saída
+
   input [31:0] memory_data_in, // dado de entrada
+  output wire [31:0] memory_address, // endereço de saída
+  output wire  [31:0] memory_data_out, // dado de saída
   output wire memory_write_enable // write enable
 );
 
@@ -61,8 +62,17 @@ wire[31:0] register_destination1;
 wire[31:0] alu_register_output;
 wire [31:0] alu_result;
 
-// Instantiating the blocks 
+always @ (posedge resetn) begin
 
+    result = 0;
+    alu_mux_A = 0;
+    alu_mux_B = 0;
+    //assign instruction = 0;
+    //memory_address = 0;
+
+end
+
+// Instantiating the blocks 
 control_unit control0 (.clock(clk), 
                        .zero(zero_signal), 
                        .funct7(funct7), 
@@ -91,7 +101,7 @@ clocked_register instruction_pc_register(.clock(clk),
                                          .enable(cu_instreg_write), 
                                          .inputA(program_count), 
                                          .outputA(old_program_count),
-                                         .inputB(memory_data_out), 
+                                         .inputB(memory_data_in), 
                                          .outputB(instruction));
 
 
