@@ -17,7 +17,7 @@ module control_unit(
     output reg [1:0] immediate_source
 );
 
-reg state;
+reg [3:0] state;
 reg pc_update;
 reg branch;
 reg ALU_operation;
@@ -50,18 +50,36 @@ always @ (opcode or funct3 or funct7) begin
     endcase
 end
 
-always @ (posedge clock) begin
-    //pc write control signal 
-    pc_write = (zero && branch) || pc_update;
-
-    //Immediate control:
+//Immediate source selection
+always @ (opcode) begin
     case(opcode)
-        7'd3: immediate_source = 2'b00;
-        7'd35: immediate_source = 2'b01;
-        7'd51: immediate_source = 2'bXX;
-        7'd99: immediate_source = 2'b10;
-        7'd19: immediate_source = 2'b00;
+            7'd3: immediate_source = 2'b00;
+            7'd35: immediate_source = 2'b01;
+            7'd51: immediate_source = 2'bXX;
+            7'd99: immediate_source = 2'b10;
+            7'd19: immediate_source = 2'b00;
+            default: immediate_source = 2'b0;
     endcase
+end
+
+//pc write control signal 
+
+always @ (zero or branch or pc_update) begin
+    pc_write = (zero && branch) || pc_update; 
+end 
+
+always @ (posedge clock) begin
+
+    //zeroing
+    address_source = 0;
+    memory_write = 0;
+    //ir_write = 1;
+    register_write = 0;
+    result_source = 2'b00;
+    ALU_source_A = 2'b00;
+    ALU_source_B = 2'b10;
+    pc_update = 1'b0;
+
 
     //State machine
     case (state)
@@ -83,16 +101,16 @@ always @ (posedge clock) begin
         ALU_source_B = 2'b01;
         ALU_operation = 2'b00;
 
-    $display("opcode %d, expected %d, state %d ", opcode, 7'b0010011, state);
+    //$display("opcode %d, expected %d, state %d ", opcode, 7'b0010011, state);
         case (opcode)
             7'b0000011, 7'b0100011: state = 4'd2; // lw or sw 
             7'b0110011: state = 4'd6; // R-type
             7'b0010011: state = 4'd8; // I-type ALU
             7'b1101011: state = 4'd9; // JAL
             7'b1100011: state = 4'd10; // BEQ
-            default: state = 4'd9; //Back to fetch in case of a strange opcode
+            default: state = 4'd0; //Back to fetch in case of a strange opcode
         endcase
-        $display("opcode %d, state %d", opcode, state);
+        //$display("opcode %d, state %d", opcode, state);
 
     end
 
