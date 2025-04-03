@@ -30,7 +30,7 @@ initial begin
   resetn = 1'b0;
   #11 resetn = 1'b1;
   $display("*** Starting simulation. ***");
-  #4000 $finish;
+  #50 $finish;
 end
 
 // Verifica se o endereço atingiu 4092 (0xFFC) e encerra a simulação
