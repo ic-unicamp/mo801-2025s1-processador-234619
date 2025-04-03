@@ -9,8 +9,8 @@ module clocked_register(
     
     always @ (posedge clock) begin
         if (enable) begin
-            outputA = inputA;
-            outputB = inputB;
+            outputA[31:0] = inputA[31:0];
+            outputB[31:0] = inputB[31:0];
         end
     
     end
