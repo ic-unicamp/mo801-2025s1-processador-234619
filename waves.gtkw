@@ -1,0 +1,63 @@
+[*]
+[*] GTKWave Analyzer v3.3.104 (w)1999-2020 BSI
+[*] Thu Apr  3 04:13:48 2025
+[*]
+[dumpfile] "/home/gabrielayres/mo801/mo801-2025s1-processador-234619/saida.vcd"
+[dumpfile_mtime] "Thu Apr  3 04:09:25 2025"
+[dumpfile_size] 8104
+[savefile] "/home/gabrielayres/mo801/mo801-2025s1-processador-234619/waves.gtkw"
+[timestart] 10
+[size] 1920 1007
+[pos] -1 -1
+*-1.000000 15 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] tb.
+[treeopen] tb.dut.
+[sst_width] 268
+[signals_width] 324
+[sst_expanded] 1
+[sst_vpaned_height] 285
+@28
+tb.dut.clk
+tb.dut.cu_PC_write
+@22
+tb.dut.opcode[6:0]
+tb.dut.instruction[31:0]
+tb.dut.memory_data_in[31:0]
+tb.dut.memory_address[31:0]
+@28
+tb.dut.funct3[2:0]
+@22
+tb.dut.funct7[6:0]
+@28
+tb.dut.control0.pc_write
+@22
+tb.dut.old_program_count[31:0]
+tb.dut.alu_result[31:0]
+@28
+tb.dut.control0.immediate_source[1:0]
+@22
+tb.dut.control0.state[3:0]
+tb.dut.output_destination1[31:0]
+tb.dut.output_destination2[31:0]
+tb.dut.register_source1[4:0]
+tb.dut.register_source2[4:0]
+@28
+tb.dut.alu0.operation_control[2:0]
+@24
+tb.dut.alu0.source_A[31:0]
+tb.dut.alu0.source_B[31:0]
+tb.dut.alu0.operation_output[31:0]
+@28
+tb.dut.cu_instreg_write
+@29
+tb.dut.control0.result_source[1:0]
+@28
+tb.dut.control0.register_write
+tb.dut.control0.address_source
+@24
+tb.dut.result[31:0]
+tb.dut.program_count[31:0]
+@22
+tb.dut.memory_address[31:0]
+[pattern_trace] 1
+[pattern_trace] 0
