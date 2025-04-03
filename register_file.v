@@ -12,12 +12,12 @@ module register_file(
     output reg [31:0] rd2
 );
 
-reg [4:0] registers [31:0];
+reg [31:0] registers [31:0];
 integer i;
 
 initial begin
   for (i = 0; i < 32; i = i + 1) begin
-    registers[i] = 32'h00000000;
+    registers[i] = 32'd0;
   end
 end
 
@@ -25,7 +25,9 @@ always @ (posedge clock) begin
 
     if (write_enable)
         registers[rd] = result;
-    
+end
+
+always @ (*) begin
     rd1 = registers[rs1][31:0];
     rd2 = registers[rs2][31:0];
 end
