@@ -150,16 +150,14 @@ case (cu_alusrc_A)
     2'b00: alu_mux_A = program_count;
     2'b01: alu_mux_A = old_program_count;
     2'b10: alu_mux_A = register_destination1;
-    //CHECK THIS CASE
-    2'b11: alu_mux_A = program_count;
+    default: alu_mux_A = program_count;
 endcase
 
 case (cu_alusrc_B)
     2'b00: alu_mux_B = memory_data_in;
     2'b01: alu_mux_B = immediate_output;
     2'b10: alu_mux_B = 32'd4;
-    //CHECK THIS CASE
-    2'b11: alu_mux_B = program_count;
+    default: alu_mux_B = program_count;
 endcase
 end
 
@@ -168,8 +166,7 @@ always @(cu_result_source) begin
         2'b00: result = alu_result;
         2'b01: result = idm_to_result;
         2'b10: result = alu_register_output;
-        //CHECK THIS CASE
-        2'b11: alu_mux_B = 0;
+        default: result = alu_result;
     endcase
 end
 
