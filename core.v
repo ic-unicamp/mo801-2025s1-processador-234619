@@ -62,15 +62,15 @@ wire[31:0] register_destination1;
 wire[31:0] alu_register_output;
 wire [31:0] alu_result;
 
-always @ (posedge resetn) begin
+// always @ (posedge resetn) begin
 
-    result = 0;
-    alu_mux_A = 0;
-    alu_mux_B = 0;
-    //assign instruction = 0;
-    //memory_address = 0;
+//     result = 0;
+//     alu_mux_A = 0;
+//     alu_mux_B = 0;
+//     //assign instruction = 0;
+//     //memory_address = 0;
 
-end
+// end
 
 // Instantiating the blocks 
 control_unit control0 (.clock(clk), 
@@ -91,18 +91,24 @@ control_unit control0 (.clock(clk),
 
 
 clocked_register program_counter (.clock(clk), 
+                                  .resetn(resetn),
                                   .enable(cu_PC_write), 
                                   .inputA(result), 
                                   .outputA(program_count));
 
 
 
-clocked_register instruction_pc_register(.clock(clk), 
+clocked_register instruction_pc_register(.clock(clk),                                  .resetn(resetn),
+                                         .resetn(resetn),
                                          .enable(cu_instreg_write), 
                                          .inputA(program_count), 
-                                         .outputA(old_program_count),
-                                         .inputB(memory_data_in), 
-                                         .outputB(instruction));
+                                         .outputA(old_program_count));
+
+clocked_register instruction_register(.clock(clk),
+                                            .resetn(resetn),
+                                            .enable(cu_instreg_write),
+                                            .inputA(memory_data_in),
+                                            .outputA(instruction));
 
 
 clocked_register data_result_register(.clock(clk), 
@@ -124,6 +130,7 @@ immediate_extend extender(.full_instruction(instruction),
                           .immediate_source(cu_immediate_src),
                           .immediate_extended(immediate_output));
 
+// separar em dois
 clocked_register register_file_register (.clock(clk), .enable(1'b1),
                                          .inputA(output_destination1), 
                                          .outputA(register_destination1),
