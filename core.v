@@ -146,7 +146,7 @@ alu alu0 (.operation_control(cu_alu_control),
 
 assign memory_address = cu_address_source ? result : program_count;
 
-always @ (cu_alu_mux_src_A, cu_alu_mux_src_B) begin
+always @ (*) begin
     case (cu_alu_mux_src_A)
         2'b00: alu_mux_output_A = program_count;
         2'b01: alu_mux_output_A = old_program_count;
