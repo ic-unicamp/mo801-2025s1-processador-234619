@@ -20,8 +20,8 @@ wire cu_address_source;
 wire cu_instreg_write; 
 wire cu_regfile_write;
 wire [1:0] cu_immediate_src;
-wire [1:0] cu_alusrc_A;
-wire [1:0] cu_alusrc_B;
+wire [1:0] cu_alu_mux_src_A;
+wire [1:0] cu_alu_mux_src_B;
 wire [2:0] cu_alu_control;
 wire [1:0] cu_result_source;
 
@@ -51,8 +51,8 @@ assign register_source1 = instruction[19:15];
 assign register_source2 = instruction[24:20];
 assign register_destination = instruction[11:7];
 
-reg [31:0] alu_mux_A;
-reg [31:0] alu_mux_B;
+reg [31:0] alu_mux_output_A;
+reg [31:0] alu_mux_output_B;
 
 //register file register
 wire [31:0] idm_to_result;
@@ -62,18 +62,9 @@ wire[31:0] register_destination1;
 wire[31:0] alu_register_output;
 wire [31:0] alu_result;
 
-// always @ (posedge resetn) begin
-
-//     result = 0;
-//     alu_mux_A = 0;
-//     alu_mux_B = 0;
-//     //assign instruction = 0;
-//     //memory_address = 0;
-
-// end
-
 // Instantiating the blocks 
-control_unit control0 (.clock(clk), 
+control_unit control0 (.clock(clk),
+                       .resetn(resetn),
                        .zero(zero_signal), 
                        .funct7(funct7), 
                        .funct3(funct3), 
@@ -85,8 +76,8 @@ control_unit control0 (.clock(clk),
                        .register_write(cu_regfile_write), 
                        .result_source(cu_result_source),
                        .ALU_control(cu_alu_control), 
-                       .ALU_source_A(cu_alusrc_A), 
-                       .ALU_source_B(cu_alusrc_B),
+                       .ALU_source_A(cu_alu_mux_src_A), 
+                       .ALU_source_B(cu_alu_mux_src_B),
                        .immediate_source(cu_immediate_src));
 
 
@@ -97,18 +88,17 @@ clocked_register program_counter (.clock(clk),
                                   .outputA(program_count));
 
 
-
-clocked_register instruction_pc_register(.clock(clk),                                  .resetn(resetn),
+clocked_register old_pc_register(.clock(clk),
                                          .resetn(resetn),
                                          .enable(cu_instreg_write), 
                                          .inputA(program_count), 
                                          .outputA(old_program_count));
 
 clocked_register instruction_register(.clock(clk),
-                                            .resetn(resetn),
-                                            .enable(cu_instreg_write),
-                                            .inputA(memory_data_in),
-                                            .outputA(instruction));
+                                      .resetn(resetn),
+                                      .enable(cu_instreg_write),
+                                      .inputA(memory_data_in),
+                                      .outputA(instruction));
 
 
 clocked_register data_result_register(.clock(clk), 
@@ -131,11 +121,15 @@ immediate_extend extender(.full_instruction(instruction),
                           .immediate_extended(immediate_output));
 
 // separar em dois
-clocked_register register_file_register (.clock(clk), .enable(1'b1),
-                                         .inputA(output_destination1), 
-                                         .outputA(register_destination1),
-                                         .inputB(output_destination2), 
-                                         .outputB(memory_data_out)); //verificar
+clocked_register register_file_registerA (.clock(clk), 
+                                          .enable(1'b1),
+                                          .inputA(output_destination1), 
+                                          .outputA(register_destination1));
+
+clocked_register register_file_registerB (.clock(clk), 
+                                          .enable(1'b1),
+                                          .inputA(output_destination2), 
+                                          .outputA(memory_data_out)); 
 
 
 clocked_register alu_register(.clock(clk),
@@ -144,28 +138,28 @@ clocked_register alu_register(.clock(clk),
                             .outputA(alu_register_output));
 
 alu alu0 (.operation_control(cu_alu_control), 
-          .source_A(alu_mux_A), 
-          .source_B(alu_mux_B),
+          .source_A(alu_mux_output_A), 
+          .source_B(alu_mux_output_B),
           .operation_output(alu_result), 
           .zero(zero_signal)
           );
 
 assign memory_address = cu_address_source ? result : program_count;
 
-always @ (cu_alusrc_A, cu_alusrc_B) begin
-case (cu_alusrc_A)
-    2'b00: alu_mux_A = program_count;
-    2'b01: alu_mux_A = old_program_count;
-    2'b10: alu_mux_A = register_destination1;
-    default: alu_mux_A = program_count;
-endcase
+always @ (cu_alu_mux_src_A, cu_alu_mux_src_B) begin
+    case (cu_alu_mux_src_A)
+        2'b00: alu_mux_output_A = program_count;
+        2'b01: alu_mux_output_A = old_program_count;
+        2'b10: alu_mux_output_A = register_destination1;
+        default: alu_mux_output_A = program_count;
+    endcase
 
-case (cu_alusrc_B)
-    2'b00: alu_mux_B = memory_data_in;
-    2'b01: alu_mux_B = immediate_output;
-    2'b10: alu_mux_B = 32'd4;
-    default: alu_mux_B = program_count;
-endcase
+    case (cu_alu_mux_src_B)
+        2'b00: alu_mux_output_B = memory_data_in;
+        2'b01: alu_mux_output_B = immediate_output;
+        2'b10: alu_mux_output_B = 32'd4;
+        default: alu_mux_output_B = program_count;
+    endcase
 end
 
 always @(cu_result_source) begin
