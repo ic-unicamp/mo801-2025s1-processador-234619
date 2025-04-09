@@ -7,11 +7,10 @@ module clocked_register(
     );
     
     always @ (posedge clock) begin
-        if (resetn) 
+        if (~resetn) 
             outputA = 0;
         else if (enable) begin
             outputA[31:0] = inputA[31:0];
-            outputB[31:0] = inputB[31:0];
         end
     end
     
