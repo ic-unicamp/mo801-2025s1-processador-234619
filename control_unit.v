@@ -93,14 +93,14 @@ always @ (*) begin
     end
 
     else begin
-        //address_source = 0;
-        //memory_write = 0;
-        ////ir_write = 1;
-        //register_write = 0;
-        //result_source = 2'b00;
-        //ALU_source_A = 2'b00;
-        //ALU_source_B = 2'b10;
-        //pc_update = 1'b0V;
+        address_source = 0;
+        memory_write = 0;
+        ir_write = 0;
+        register_write = 0;
+        result_source = 2'b00;
+        ALU_source_A = 2'b00;
+        ALU_source_B = 2'b10;
+        pc_update = 1'b0;
 
 
         //State machine
