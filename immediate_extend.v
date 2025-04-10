@@ -8,7 +8,7 @@ initial begin
     immediate_extended = 32'd0;
 end
 
-always @ (immediate_source)
+always @ (*)
 begin
     case(immediate_source)
         2'b00: immediate_extended = {{20{full_instruction[31]}}, full_instruction[31:20]};

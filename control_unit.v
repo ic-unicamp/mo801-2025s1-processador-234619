@@ -81,7 +81,6 @@ end
 always @ (*) begin
 
     if (~resetn) begin
-        state = 4'd0;
         next_state = 4'd0;
         pc_update = 1'b0;
         ALU_source_A = 2'b00;
@@ -101,6 +100,10 @@ always @ (*) begin
         ALU_source_A = 2'b00;
         ALU_source_B = 2'b10;
         pc_update = 1'b0;
+        branch = 1'b0;
+        next_state = 4'd0;
+        pc_update = 1'b0;
+        ALU_operation = 2'b00;
 
 
         //State machine
@@ -185,7 +188,7 @@ always @ (*) begin
 
         4'd7: begin //S7: ALU WriteBack
             $display("S7: ALU Writeback");
-            result_source = 2'b00;
+            result_source = 2'b10;
             register_write = 1'b1;
 
             next_state = 4'd0;
@@ -196,6 +199,7 @@ always @ (*) begin
             ALU_source_A = 2'b10;
             ALU_source_B = 2'b01;
             ALU_operation = 2'b10;
+            immediate_source = 2'b00;
             
             next_state = 4'd7; 
         end

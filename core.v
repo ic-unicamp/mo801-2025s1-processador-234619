@@ -155,7 +155,7 @@ always @ (*) begin
     endcase
 
     case (cu_alu_mux_src_B)
-        2'b00: alu_mux_output_B = memory_data_in;
+        2'b00: alu_mux_output_B = memory_data_out;
         2'b01: alu_mux_output_B = immediate_output;
         2'b10: alu_mux_output_B = 32'd4;
         default: alu_mux_output_B = program_count;
