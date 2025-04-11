@@ -53,7 +53,7 @@ always @ (opcode or funct3 or funct7) begin
 end
 
 //Immediate source selection
-always @ (opcode) begin
+always @ (*) begin
     case(opcode)
             7'd3: immediate_source = 2'b00;
             7'd35: immediate_source = 2'b01;
@@ -115,7 +115,7 @@ always @ (*) begin
             ALU_source_A = 2'b00;
             ALU_source_B = 2'b10;
             ALU_operation = 2'b00;
-            result_source = 2'b10;
+            result_source = 2'b00;
             pc_update = 1'b1;
             next_state = 4'd1;
         end
@@ -141,8 +141,8 @@ always @ (*) begin
 
         4'd2: begin // S2: MemAdr
         $display("S2: Memory Address");
-            ALU_source_A = 2'b00;
-            ALU_source_B = 2'b10;
+            ALU_source_A = 2'b10;
+            ALU_source_B = 2'b01;
             ALU_operation = 2'b00;
 
             case (opcode)
@@ -153,7 +153,7 @@ always @ (*) begin
 
         4'd3: begin //S3: MemRead
             $display("S3: MemRead");
-            result_source = 2'b00;
+            result_source = 2'b10;
             address_source = 1'b1;
 
             next_state = 4'd4;
@@ -169,7 +169,7 @@ always @ (*) begin
 
         4'd5: begin //S5: MemWrite
             $display("S5: Mem Write");
-            result_source = 2'b00;
+            result_source = 2'b10;
             address_source = 1'b1;
             memory_write = 1'b1;
 
@@ -199,7 +199,7 @@ always @ (*) begin
             ALU_source_A = 2'b10;
             ALU_source_B = 2'b01;
             ALU_operation = 2'b10;
-            immediate_source = 2'b00;
+            //immediate_source = 2'b00;
             
             next_state = 4'd7; 
         end
