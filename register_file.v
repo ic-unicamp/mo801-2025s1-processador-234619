@@ -22,9 +22,10 @@ initial begin
 end
 
 always @ (posedge clock) begin
-
     if (write_enable)
         registers[rd] = result;
+        $display("x0=%h\nx1=%h\nx2=%h\nx3=%h\nx4=%h\nx5=%h\nx6=%h\nx7=%h\nx8=%h\nx9=%h\nx10=%h\n",
+        registers[0],registers[1],registers[2],registers[3],registers[4],registers[5],registers[6],registers[7],registers[8],registers[9],registers[10]);
 end
 
 always @ (*) begin
