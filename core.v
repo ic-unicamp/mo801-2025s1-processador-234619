@@ -49,7 +49,9 @@ assign opcode = instruction[6:0];
 
 assign register_source1 = instruction[19:15];
 assign register_source2 = instruction[24:20];
-assign register_destination = instruction[11:7];
+
+
+assign register_destination = (opcode == 7'd111) ? 5'd31 : instruction[11:7];
 
 reg [31:0] alu_mux_output_A;
 reg [31:0] alu_mux_output_B;
