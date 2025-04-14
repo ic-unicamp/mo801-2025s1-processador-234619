@@ -31,7 +31,7 @@ reg ALU_operation;
     //ALU_operation = 2'b00;
 //end
 
-always @ (opcode or funct3 or funct7) begin
+always @ (*) begin
     //ALU Decoder
     case(ALU_operation)
         2'b00: ALU_control = 3'b000;
@@ -55,18 +55,19 @@ end
 //Immediate source selection
 always @ (*) begin
     case(opcode)
-            7'd3: immediate_source = 2'b00;
-            7'd35: immediate_source = 2'b01;
-            7'd51: immediate_source = 2'bXX;
-            7'd99: immediate_source = 2'b10;
-            7'd19: immediate_source = 2'b00;
-            default: immediate_source = 2'b0;
+            7'd3: immediate_source = 3'b000;
+            7'd35: immediate_source = 3'b001;
+            7'd51: immediate_source = 3'bXXX;
+            7'd99: immediate_source = 3'b010;
+            7'd19: immediate_source = 3'b000;
+            7'd111: immediate_source = 3'b011;
+            default: immediate_source = 3'b0;
     endcase
 end
 
 //pc write control signal 
 
-always @ (zero or branch or pc_update) begin
+always @ (*) begin
     pc_write = (zero && branch) || pc_update; 
 end 
 
@@ -131,11 +132,11 @@ always @ (*) begin
                 7'b0000011, 7'b0100011: next_state = 4'd2; // lw or sw 
                 7'b0110011: next_state = 4'd6; // R-type
                 7'b0010011: next_state = 4'd8; // I-type ALU
-                7'b1101011: next_state = 4'd9; // JAL
+                7'b1101111: next_state = 4'd9; // JAL
                 7'b1100011: next_state = 4'd10; // BEQ
                 default: next_state = 4'd0; //Back to fetch in case of a strange opcode
             endcase
-            //$display("opcode %d, state %d", opcode, state);
+            $display("opcode %b, state %d", opcode, next_state);
 
         end
 
@@ -207,8 +208,8 @@ always @ (*) begin
         4'd9: begin //S9: JAL
             $display("S9: JAL");
             ALU_source_A = 2'b01;
-            ALU_source_B = 2'b10;
-            ALU_operation = 2'b00;
+            ALU_source_B = 2'b01;
+            ALU_operation = 2'b10;
             result_source = 2'b00;
             pc_update = 1'b1;
             
